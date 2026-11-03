@@ -1,4 +1,4 @@
-# Notification Sound for Forge Neo
+# Notification Sound for Forge Neo 🔔
 
 Plays a sound through Python when a generation job finishes, so it works even when the
 browser is minimized or in the background. Windows only.
