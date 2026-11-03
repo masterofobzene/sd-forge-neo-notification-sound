@@ -7,7 +7,7 @@ browser is minimized or in the background. Windows only.
 
 1. Open the **Extensions** tab → **Install from URL**
 2. Paste this repo's URL and click **Install**
-3. Fully restart the WebUI (a UI reload is not enough)
+3. __Fully restart__ the WebUI (a UI reload is not enough)
 
 ## Sound file
 
