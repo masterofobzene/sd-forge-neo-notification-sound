@@ -9,9 +9,10 @@
 
 import sys
 import threading
+from functools import wraps
 from pathlib import Path
 
-from modules import scripts, shared
+from modules import shared
 
 EXT_DIR = Path(__file__).resolve().parents[1]
 ROOT_DIR = Path(__file__).resolve().parents[3]  # <root>/extensions/<name>/scripts/this_file
@@ -60,12 +61,23 @@ def play_notification():
     threading.Thread(target=_play_blocking, args=(sound, volume), daemon=True).start()
 
 
-class NotificationSound(scripts.Script):
-    def title(self):
-        return "Notification Sound"
+def _install_hook():
+    if getattr(shared.state.end, "_notification_sound_hooked", False):
+        return
 
-    def show(self, is_img2img):
-        return scripts.AlwaysVisible
+    orig_end = shared.state.end
 
-    def postprocess(self, p, processed, *args):
-        play_notification()
+    @wraps(orig_end)
+    def wrapped_end(*args, **kwargs):
+        interrupted = getattr(shared.state, "interrupted", False)
+        skipped = getattr(shared.state, "skipped", False)
+        res = orig_end(*args, **kwargs)
+        if not interrupted and not skipped:
+            play_notification()
+        return res
+
+    setattr(wrapped_end, "_notification_sound_hooked", True)
+    shared.state.end = wrapped_end
+
+
+_install_hook()
